@@ -6,15 +6,15 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.moobin.util.EntityCollection;
-import com.moobin.util.Factory;
+import com.moobin.util.EntitySet;
+import com.moobin.util.EntitySetBuilder;
 import com.moobin.util.impl.FactoryImpl;
 
 public class EntityCollectionTest {
 
-	private static Factory factory;
-	private static EntityCollection<String, Entity> entities;
-	private static EntityCollection<String, Entity> subCollection;
+	private static EntitySetBuilder factory;
+	private static EntitySet<String, Entity> entities;
+	private static EntitySet<String, Entity> subCollection;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

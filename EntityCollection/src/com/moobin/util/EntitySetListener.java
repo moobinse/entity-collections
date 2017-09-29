@@ -1,6 +1,6 @@
 package com.moobin.util;
 
-public interface EntityCollectionListener<V> {
+public interface EntitySetListener<V> {
 
 	void onAdd(V value);
 	

@@ -2,17 +2,17 @@ package com.moobin.util.impl;
 
 import java.util.function.Predicate;
 
-import com.moobin.util.EntityCollection;
+import com.moobin.util.EntitySet;
 
 class SubCollection<K, V> extends EntityCollectionImpl<K, V> {
 
 	/**
 	 * 
 	 */
-	private final EntityCollection<K, V> source;
+	private final EntitySet<K, V> source;
 	private Predicate<V> filter;
 
-	SubCollection(EntityCollection<K, V> source, Predicate<V> filter) {
+	SubCollection(EntitySet<K, V> source, Predicate<V> filter) {
 		super(source.getValueType(), source.getKeyType(), source.getKeyFunction());
 		this.source = source;
 		this.filter = filter;

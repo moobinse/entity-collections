@@ -1,6 +1,6 @@
 package com.moobin.util;
 
-public interface MoobinIndexedCollection<K extends Comparable<K>, V> {
+public interface IndexedEntitySet<K extends Comparable<K>, V> {
 
 	V get(int index);
 	

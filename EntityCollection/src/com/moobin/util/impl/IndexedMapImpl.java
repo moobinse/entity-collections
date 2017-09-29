@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.moobin.util.MoobinIndexedCollection;
+import com.moobin.util.IndexedEntitySet;
 
-public class IndexedMapImpl<K extends Comparable<K>, V> implements MoobinIndexedCollection<K, V> {
+public class IndexedMapImpl<K extends Comparable<K>, V> implements IndexedEntitySet<K, V> {
 
 	Entry root;
 	private Function<V, K> keyProperty;

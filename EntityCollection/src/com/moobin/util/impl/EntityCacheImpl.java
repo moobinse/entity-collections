@@ -2,22 +2,22 @@ package com.moobin.util.impl;
 
 import java.util.Map;
 
-import com.moobin.util.EntityCollections;
-import com.moobin.util.EntityCollection;
+import com.moobin.util.EntitySets;
+import com.moobin.util.EntitySet;
 
-public class EntityCacheImpl implements EntityCollections {
+public class EntityCacheImpl implements EntitySets {
 
-	Map<Object, EntityCollection<?, ?>> map;
+	Map<Object, EntitySet<?, ?>> map;
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <K, V> EntityCollection<K, V> getCollection(Class<V> clazz) {
-		return (EntityCollection<K, V>) map.get(clazz);
+	public <K, V> EntitySet<K, V> getCollection(Class<V> clazz) {
+		return (EntitySet<K, V>) map.get(clazz);
 	}
 
 	@Override
-	public <K, V> EntityCollection<K, V> getCollection(String name) {
-		return (EntityCollection<K, V>) map.get(name);
+	public <K, V> EntitySet<K, V> getCollection(String name) {
+		return (EntitySet<K, V>) map.get(name);
 	}
 
 }

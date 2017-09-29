@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import com.moobin.util.EntityCollection;
-import com.moobin.util.EntityCollectionListener;
+import com.moobin.util.EntitySet;
+import com.moobin.util.EntitySetListener;
 
-public class EntityCollectionImpl<K, V> implements EntityCollection<K, V> {
+public class EntityCollectionImpl<K, V> implements EntitySet<K, V> {
 
 	private Map<K, V> map;
 	Class<K> keyType;
@@ -19,7 +19,7 @@ public class EntityCollectionImpl<K, V> implements EntityCollection<K, V> {
 	Function<V, K> keyFunction;
 	
 	private List<SubCollection<K, V>> subCollections = new ArrayList<>();
-	private List<EntityCollectionListener<V>> listeners = new ArrayList<>();
+	private List<EntitySetListener<V>> listeners = new ArrayList<>();
 	
 	public EntityCollectionImpl(Class<V> valueType, Class<K> keyType, Function<V, K> keyFunction) {
 		this.keyFunction = keyFunction;
@@ -29,7 +29,7 @@ public class EntityCollectionImpl<K, V> implements EntityCollection<K, V> {
 	}
 
 	@Override
-	public EntityCollection<K, V> filter(Predicate<V> filter) {
+	public EntitySet<K, V> filter(Predicate<V> filter) {
 		for (SubCollection<K, V> subCollection : subCollections) {
 			if (filter.equals(subCollection.getFilter())) {
 				return subCollection;
@@ -91,7 +91,7 @@ public class EntityCollectionImpl<K, V> implements EntityCollection<K, V> {
 	@Override
 	public void clear() {
 		map.clear();
-		subCollections.forEach(EntityCollection::clear);
+		subCollections.forEach(EntitySet::clear);
 	}
 
 	@Override

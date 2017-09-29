@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public interface EntityCollection<K, V> {
+public interface EntitySet<K, V> {
 
 	Class<V> getValueType();
 	
@@ -30,7 +30,7 @@ public interface EntityCollection<K, V> {
 	
 	Collection<V> getValues();
 
-	EntityCollection<K, V> filter(Predicate<V> filter);
+	EntitySet<K, V> filter(Predicate<V> filter);
 
 	
 }
