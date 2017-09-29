@@ -9,13 +9,13 @@ import java.util.function.Function;
 
 import com.moobin.util.IndexedEntitySet;
 
-public class IndexedMapImpl<K extends Comparable<K>, V> implements IndexedEntitySet<K, V> {
+public class IndexedEntitySetImpl<K extends Comparable<K>, V> implements IndexedEntitySet<K, V> {
 
 	Entry root;
 	private Function<V, K> keyProperty;
 	Map<K, Entry> map = new HashMap<>();
 
-	public IndexedMapImpl(Function<V, K> keyProperty) {
+	public IndexedEntitySetImpl(Function<V, K> keyProperty) {
 		this.keyProperty = keyProperty;
 	}
 	

@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.moobin.util.impl.IndexedMapImpl.Entry;
+import com.moobin.util.impl.IndexedEntitySetImpl.Entry;
 
-public class SortedMap<K extends Comparable<K>, V, S> extends IndexedMapImpl<K, V> {
+public class SortedMap<K extends Comparable<K>, V, S> extends IndexedEntitySetImpl<K, V> {
 
 	private Function<V, S> sortProperty;
 

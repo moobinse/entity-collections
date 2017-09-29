@@ -11,17 +11,17 @@ import java.util.function.Predicate;
 import com.moobin.util.EntitySet;
 import com.moobin.util.EntitySetListener;
 
-public class EntityCollectionImpl<K, V> implements EntitySet<K, V> {
+public class EntitySetImpl<K, V> implements EntitySet<K, V> {
 
 	private Map<K, V> map;
 	Class<K> keyType;
 	Class<V> valueType;
 	Function<V, K> keyFunction;
 	
-	private List<SubCollection<K, V>> subCollections = new ArrayList<>();
+	private List<EntitySubSet<K, V>> subCollections = new ArrayList<>();
 	private List<EntitySetListener<V>> listeners = new ArrayList<>();
 	
-	public EntityCollectionImpl(Class<V> valueType, Class<K> keyType, Function<V, K> keyFunction) {
+	public EntitySetImpl(Class<V> valueType, Class<K> keyType, Function<V, K> keyFunction) {
 		this.keyFunction = keyFunction;
 		this.valueType = valueType;
 		this.keyType = keyType;
@@ -30,12 +30,12 @@ public class EntityCollectionImpl<K, V> implements EntitySet<K, V> {
 
 	@Override
 	public EntitySet<K, V> filter(Predicate<V> filter) {
-		for (SubCollection<K, V> subCollection : subCollections) {
+		for (EntitySubSet<K, V> subCollection : subCollections) {
 			if (filter.equals(subCollection.getFilter())) {
 				return subCollection;
 			}
 		}
-		SubCollection<K, V> subCollection = new SubCollection<K, V>(this, filter);
+		EntitySubSet<K, V> subCollection = new EntitySubSet<K, V>(this, filter);
 		subCollections.add(subCollection);
 		return subCollection;
 	}

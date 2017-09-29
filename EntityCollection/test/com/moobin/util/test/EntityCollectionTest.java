@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import com.moobin.util.EntitySet;
 import com.moobin.util.EntitySetBuilder;
-import com.moobin.util.impl.FactoryImpl;
+import com.moobin.util.impl.EntitySetBuilderImpl;
 
 public class EntityCollectionTest {
 
@@ -19,7 +19,7 @@ public class EntityCollectionTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		
-		factory = new FactoryImpl();
+		factory = new EntitySetBuilderImpl();
 		entities = factory.create(Entity.class, String.class, e -> e.id);
 		subCollection = entities.filter(e -> e.number % 10 == 3);
 	}

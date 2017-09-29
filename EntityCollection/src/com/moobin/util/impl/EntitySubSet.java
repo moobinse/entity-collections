@@ -4,7 +4,7 @@ import java.util.function.Predicate;
 
 import com.moobin.util.EntitySet;
 
-class SubCollection<K, V> extends EntityCollectionImpl<K, V> {
+class EntitySubSet<K, V> extends EntitySetImpl<K, V> {
 
 	/**
 	 * 
@@ -12,7 +12,7 @@ class SubCollection<K, V> extends EntityCollectionImpl<K, V> {
 	private final EntitySet<K, V> source;
 	private Predicate<V> filter;
 
-	SubCollection(EntitySet<K, V> source, Predicate<V> filter) {
+	EntitySubSet(EntitySet<K, V> source, Predicate<V> filter) {
 		super(source.getValueType(), source.getKeyType(), source.getKeyFunction());
 		this.source = source;
 		this.filter = filter;
