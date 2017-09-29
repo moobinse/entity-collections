@@ -6,15 +6,25 @@ import java.util.function.Predicate;
 
 public interface EntitySet<K, V> {
 
-	Class<V> getValueType();
+	Entity<V, K> getEntity();
 	
-	Class<K> getKeyType();
+	default Class<V> getValueType() {
+		return getEntity().entityType();
+	}
 	
-	Function<V, K> getKeyFunction();
+	default Class<K> getKeyType() {
+		return getEntity().keyType();
+	}
+	
+	default Function<V, K> getKeyFunction() {
+		return getEntity()::getKey;
+	}
 
 	V getValue(K key);
 	
-	K getKey(V value);
+	default K getKey(V value) {
+		return getEntity().getKey(value);
+	}
 	
 	V update(V value);
 	
@@ -31,6 +41,5 @@ public interface EntitySet<K, V> {
 	Collection<V> getValues();
 
 	EntitySet<K, V> filter(Predicate<V> filter);
-
 	
 }

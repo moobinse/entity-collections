@@ -5,27 +5,28 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.moobin.util.Entity;
 import com.moobin.util.EntitySet;
 import com.moobin.util.EntitySetListener;
 
 public class EntitySetImpl<K, V> implements EntitySet<K, V> {
 
 	private Map<K, V> map;
-	Class<K> keyType;
-	Class<V> valueType;
-	Function<V, K> keyFunction;
+	private Entity<V, K> entityDef;
 	
 	private List<EntitySubSet<K, V>> subCollections = new ArrayList<>();
 	private List<EntitySetListener<V>> listeners = new ArrayList<>();
 	
-	public EntitySetImpl(Class<V> valueType, Class<K> keyType, Function<V, K> keyFunction) {
-		this.keyFunction = keyFunction;
-		this.valueType = valueType;
-		this.keyType = keyType;
+	public EntitySetImpl(Entity<V, K> entityDef) {
 		map = new HashMap<>();
+		this.entityDef = entityDef;
+	}
+	
+	@Override
+	public Entity<V, K> getEntity() {
+		return entityDef;
 	}
 
 	@Override
@@ -41,28 +42,8 @@ public class EntitySetImpl<K, V> implements EntitySet<K, V> {
 	}
 	
 	@Override
-	public Class<K> getKeyType() {
-		return keyType;
-	}
-	
-	@Override
-	public Function<V, K> getKeyFunction() {
-		return keyFunction;
-	}
-
-	@Override
-	public Class<V> getValueType() {
-		return valueType;
-	}
-
-	@Override
 	public V getValue(K key) {
 		return map.get(key);
-	}
-
-	@Override
-	public K getKey(V value) {
-		return keyFunction.apply(value);
 	}
 
 	@Override

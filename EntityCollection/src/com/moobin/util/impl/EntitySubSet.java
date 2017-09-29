@@ -13,7 +13,7 @@ class EntitySubSet<K, V> extends EntitySetImpl<K, V> {
 	private Predicate<V> filter;
 
 	EntitySubSet(EntitySet<K, V> source, Predicate<V> filter) {
-		super(source.getValueType(), source.getKeyType(), source.getKeyFunction());
+		super(source.getEntity());
 		this.source = source;
 		this.filter = filter;
 		source.getValues().forEach(this::update);
@@ -30,4 +30,5 @@ class EntitySubSet<K, V> extends EntitySetImpl<K, V> {
 		}
 		return super.update(value);
 	}
+	
 }
