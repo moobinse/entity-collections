@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.moobin.meta.EntityMeta;
+
 public interface EntitySet<K, V> {
 
-	Entity<V, K> getEntity();
+	EntityMeta<V, K> getEntity();
 	
 	default Class<V> getValueType() {
 		return getEntity().entityType();
@@ -26,20 +28,12 @@ public interface EntitySet<K, V> {
 		return getEntity().getKey(value);
 	}
 	
-	V update(V value);
-	
-	V removeByKey(K key);
-	
-	void clear();
-	
-	default V remove(V value) {
-		return removeByKey(getKey(value));
-	}
-	
 	int getSize();
 	
 	Collection<V> getValues();
 
 	EntitySet<K, V> filter(Predicate<V> filter);
+
+	void addListener(EntitySetListener<V> sourceListener);
 	
 }
