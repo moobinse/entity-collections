@@ -25,8 +25,8 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 	}
 
 	@Override
-	public EntityMeta<V, K> getEntity() {
-		return source.getEntity();
+	public EntityMeta<V, K> getEntityMety() {
+		return source.getEntityMety();
 	}
 
 	@Override

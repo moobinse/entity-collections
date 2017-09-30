@@ -26,7 +26,7 @@ public class EntitySetImpl<K, V> implements ModifyibleEntitySet<K, V> {
 	}
 	
 	@Override
-	public EntityMeta<V, K> getEntity() {
+	public EntityMeta<V, K> getEntityMety() {
 		return entityDef;
 	}
 
