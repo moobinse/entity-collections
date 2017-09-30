@@ -4,5 +4,4 @@ public interface ValueMeta<V> {
 
 	Class<V> getType();
 	
-	
 }

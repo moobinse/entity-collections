@@ -6,6 +6,6 @@ public interface EntityMeta<V, K> extends ValueMeta<V> {
 	
 	K getKey(V value);
 	
-	<T> PropertyMeta<K, ?> getPropretyMeta(String name);
+	PropertyMeta<V, ?> getPropertyMeta(String name);
 	
 }
