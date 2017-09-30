@@ -19,7 +19,7 @@ public interface EntitySet<K, V> {
 	void addListener(EntitySetListener<V> sourceListener);
 	
 	default Class<V> getValueType() {
-		return getEntityMety().entityType();
+		return getEntityMety().getType();
 	}
 	
 	default Class<K> getKeyType() {

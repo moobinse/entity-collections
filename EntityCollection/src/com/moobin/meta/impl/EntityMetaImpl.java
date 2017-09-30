@@ -28,7 +28,7 @@ public class EntityMetaImpl<V, K> implements EntityMeta<V, K> {
 	}
 
 	@Override
-	public Class<V> getItemType() {
+	public Class<V> getType() {
 		return valueType;
 	}
 
