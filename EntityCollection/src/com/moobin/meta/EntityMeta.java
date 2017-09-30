@@ -1,6 +1,6 @@
-package com.moobin.util;
+package com.moobin.meta;
 
-public interface Entity<V, K> {
+public interface EntityMeta<V, K> {
 
 	K getKey(V value);
 	

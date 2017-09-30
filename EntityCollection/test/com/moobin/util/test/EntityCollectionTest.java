@@ -8,19 +8,21 @@ import org.junit.Test;
 
 import com.moobin.util.EntitySet;
 import com.moobin.util.EntitySetBuilder;
+import com.moobin.util.ModifyibleEntitySet;
 import com.moobin.util.impl.EntitySetBuilderImpl;
 
 public class EntityCollectionTest {
 
 	private static EntitySetBuilder factory;
-	private static EntitySet<String, Entity> entities;
+	private static ModifyibleEntitySet<String, Entity> entities;
 	private static EntitySet<String, Entity> subCollection;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		
 		factory = new EntitySetBuilderImpl();
-		entities = factory.create(Entity.class, String.class, e -> e.id);
+		entities = (ModifyibleEntitySet<String, Entity>) 
+				factory.create(Entity.class, String.class, e -> e.id);
 		subCollection = entities.filter(e -> e.number % 10 == 3);
 	}
 

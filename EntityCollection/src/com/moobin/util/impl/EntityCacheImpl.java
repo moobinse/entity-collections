@@ -15,6 +15,7 @@ public class EntityCacheImpl implements EntitySets {
 		return (EntitySet<K, V>) map.get(clazz);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <K, V> EntitySet<K, V> getCollection(String name) {
 		return (EntitySet<K, V>) map.get(name);
