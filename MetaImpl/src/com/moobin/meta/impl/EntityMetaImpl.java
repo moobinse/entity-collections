@@ -1,6 +1,7 @@
 package com.moobin.meta.impl;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -11,7 +12,7 @@ public class EntityMetaImpl<V, K> extends ValueMetaImpl<V> implements EntityMeta
 
 	private Function<V, K> keyFunction;
 	private Class<K> keyType;
-	private Map<String, PropertyMeta<V,?>> properties;
+	private Map<String, PropertyMeta<V,?>> properties = Collections.emptyMap();
 
 	public EntityMetaImpl(Class<V> valueType, Class<K> keyType, Function<V, K> keyFunction) {
 		super(valueType);
@@ -41,14 +42,6 @@ public class EntityMetaImpl<V, K> extends ValueMetaImpl<V> implements EntityMeta
 	@Override
 	public Class<K> getKeyType() {
 		return keyType;
-	}
-
-	@Override
-	public PropertyMeta<V, ?> getPropertyMeta(String name) {
-		if (properties == null) {
-			return null;
-		}
-		return properties.get(name);
 	}
 
 }

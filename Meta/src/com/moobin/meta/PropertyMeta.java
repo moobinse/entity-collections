@@ -10,6 +10,8 @@ public interface PropertyMeta<V, P> {
 
 	Composition getComposition();
 	
-	boolean required();
+	boolean isRequired();
 
+	boolean isReadOnly();
+	
 }
