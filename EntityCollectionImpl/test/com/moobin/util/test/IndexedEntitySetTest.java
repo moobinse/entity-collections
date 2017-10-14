@@ -2,6 +2,11 @@ package com.moobin.util.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.IntStream;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -10,12 +15,14 @@ import com.moobin.util.EntitySet;
 import com.moobin.util.EntitySetBuilder;
 import com.moobin.util.ModifyibleEntitySet;
 import com.moobin.util.impl.EntitySetBuilderImpl;
+import com.moobin.util.impl.IndexedEntitySetImpl;
 
-public class EntitySetTest {
+public class IndexedEntitySetTest {
 
 	private static EntitySetBuilder factory;
 	private static ModifyibleEntitySet<String, Entity> entities;
 	private static EntitySet<String, Entity> subCollection;
+	private static IndexedEntitySetImpl<String, Entity> sorted;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -24,16 +31,16 @@ public class EntitySetTest {
 		entities = (ModifyibleEntitySet<String, Entity>) 
 				factory.create(Entity.class, String.class, e -> e.id);
 		subCollection = entities.filter(e -> e.number % 10 == 3);
+		sorted = new IndexedEntitySetImpl<>(entities, (a, b) -> a.number - b.number);
 	}
 
 	@Test
 	public void testFactory() {
 		
-		for (int i = 0; i < 100; i++) {
-			entities.update(new Entity(i));
-		}
+		randomInts(100).forEach(i -> entities.update(new Entity(i)));
 		assertEquals(100, entities.getSize());
 		assertEquals(10, subCollection.getSize());
+		assertEquals(100, sorted.getSize());
 
 		for (int i = 50; i < 200; i++) {
 			entities.update(new Entity(i));
@@ -47,10 +54,9 @@ public class EntitySetTest {
 		entities.clear();
 		assertEquals(0, entities.getSize());
 		assertEquals(0, subCollection.getSize());
+		assertEquals(0, sorted.getSize());
 		
-		for (int i = 0; i < 100; i++) {
-			entities.update(new Entity(i));
-		}
+		randomInts(100).forEach(i -> entities.update(new Entity(i)));
 		assertEquals(100, entities.getSize());
 		assertEquals(10, subCollection.getSize());
 		
@@ -62,12 +68,17 @@ public class EntitySetTest {
 		
 		Assert.assertNotNull(entities.getValue("E19"));
 		Assert.assertNull(subCollection.getValue("E19"));
+		
+		Assert.assertEquals(62, sorted.indexByKey("E62"));
+		Assert.assertEquals("E0", sorted.get(0).id);
+		Assert.assertEquals("E33", sorted.get(33).id);
 	}
 
-	@Test
-	public void testFactory2() {
-		
-		
+	private List<Integer> randomInts(int size) {
+		List<Integer> list = new ArrayList<>();
+	    IntStream.range(0, 100).forEach(list::add);
+	    Collections.shuffle(list);
+	    return list;
 	}
 
 }

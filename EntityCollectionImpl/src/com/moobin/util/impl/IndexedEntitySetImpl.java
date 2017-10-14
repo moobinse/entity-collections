@@ -1,8 +1,11 @@
 package com.moobin.util.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -22,6 +25,7 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 		this.source = source;
 		this.comparator = comparator;
 		source.addListener(this);
+		root = new Entry(source.getValues());
 	}
 
 	@Override
@@ -56,7 +60,8 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 
 	@Override
 	public int indexByKey(K key) {
-		return map.get(key).getIndex();
+		Entry entry = map.get(key);
+		return entry == null ? -1 : entry.getIndex();
 	}
 
 	@Override
@@ -101,29 +106,73 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 		map.clear();
 	}
 
+	public void dump() {
+		dump(root);
+		System.out.println();
+	}
+	
+	private void dump(Entry e) {
+		if (e == null) {
+			System.out.print("-");
+			return;
+		}
+		System.out.print(e.value);
+		if (e.left == null && e.right == null) {
+			return;
+		}
+		if (e.size == 1) return;
+		System.out.print("(");
+		dump(e.left);
+		System.out.print(",");
+		dump(e.right);
+		System.out.print(")");
+	}
+	
 	private class Entry {
 		Entry parent;
 		Entry left;
 		Entry right;
 		private V value;
 		private K key;
-		private int size;
+		private int size = 1;
 
 		Entry(V value) {
 			this.value = value;
 			this.key = getKey(value);
 		}
 
+		public Entry(List<V> list, int i, int size2) {
+			// TODO Auto-generated constructor stub
+		}
+
+		public Entry(Collection<V> values) {
+			List<V> list = new ArrayList<>(source.getValues());
+			Collections.sort(list, comparator);
+			int index = list.size() / 2;
+			left = new Entry(list, 0, index);
+			right = new Entry(list, index + 1, list.size());
+		}
+		
 		public int getIndex() {
-			return left.size + (parent == null ? 0 : parent.getIndex());
+			if (parent == null) {
+				return leftSize();
+			}
+			if (this == parent.right) {
+				return parent.getIndex() + leftSize() + 1;
+			}
+			return parent.getIndex() - size + leftSize();
 		}
 
 		public V get(int index) {
-			if (index == left.size) return value;
-			if (index < left.size) return left.get(index);
-			return right.get(index - left.size - 1);
+			if (index == leftSize()) return value;
+			if (index < leftSize()) return left.get(index);
+			return right.get(index - leftSize() - 1);
 		}
-
+		
+		private int leftSize() {
+			return left == null ? 0 : left.size;
+		}
+		
 		private void remove() {
 			parent.size--;
 			map.remove(key);
@@ -177,23 +226,25 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 			int cmp = comparator.compare(this.value, value);
 			if (cmp == 0) {
 				cmp = ((Comparable<K>) key).compareTo(getKey(value));
-
-				assert cmp != 0;
-				if (cmp < 0) {
-					if (left == null) {
-						left = new Entry(value);
-					} else {
-						left.add(value);
-					}
+			}
+			assert cmp != 0;
+			if (cmp > 0) {
+				if (left == null) {
+					left = new Entry(value);
+					left.parent = this;
+					map.put(left.key, left);
 				} else {
-					if (right == null) {
-						right = new Entry(value);
-					} else {
-						right.add(value);
-					}
+					left.add(value);
+				}
+			} else {
+				if (right == null) {
+					right = new Entry(value);
+					right.parent = this;
+					map.put(right.key, right);
+				} else {
+					right.add(value);
 				}
 			}
-
 		}
 
 	}

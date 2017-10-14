@@ -81,6 +81,7 @@ public class EntitySetImpl<K, V> implements ModifyibleEntitySet<K, V> {
 	public void clear() {
 		map.clear();
 		subSets.values().forEach(ModifyibleEntitySet::clear);
+		listeners.forEach(l -> l.onClear());
 	}
 
 	@Override
