@@ -25,7 +25,9 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 		this.source = source;
 		this.comparator = comparator;
 		source.addListener(this);
-		root = new Entry(source.getValues());
+		if (!source.getValues().isEmpty()) {
+			root = parse(source.getValues());
+		}
 	}
 
 	@Override
@@ -55,7 +57,19 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 
 	@Override
 	public V get(int index) {
-		return root.get(index);
+		return root.get(index).value;
+	}
+	
+	public List<V> get(int from, int count) {
+		List<V> list = new ArrayList<>();
+		Entry entry = root.get(from);
+		for (int i = 0; i < count; i++) {
+			if (entry != null) {
+				list.add(entry.value);
+				entry = entry.next();
+			}
+		}
+		return list;
 	}
 
 	@Override
@@ -105,9 +119,16 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 		root = null;
 		map.clear();
 	}
+	
+	@Override
+	public IndexedEntitySet<K, V> sort(Comparator<V> comparator) {
+		return source.sort(comparator);
+	}
 
 	public void dump() {
-		dump(root);
+		if (root != null) {
+			dump(root);
+		}
 		System.out.println();
 	}
 	
@@ -128,6 +149,32 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 		System.out.print(")");
 	}
 	
+	private Entry parse(List<V> list, int from, int to) {
+
+		int mid = (to + from) / 2;
+//		System.out.println(from + "-" + to + "  (" + mid + ")");
+		Entry entry = new Entry(list.get(mid));
+		entry.size = to - from + 1;
+		if (mid > from) {
+			entry.setLeft(parse(list, from, mid -1));
+		}
+		if (to > mid) {
+			entry.setRight(parse(list, mid + 1, to));
+		}
+		map.put(entry.key, entry);
+		return entry;
+	}
+
+	private Entry parse(Collection<V> values) {
+		if (values.isEmpty()) {
+			return null;
+		}
+		List<V> list = new ArrayList<>(values);
+		Collections.sort(list, comparator);
+		return parse(list, 0, list.size() - 1);
+	}
+
+	
 	private class Entry {
 		Entry parent;
 		Entry left;
@@ -141,18 +188,23 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 			this.key = getKey(value);
 		}
 
-		public Entry(List<V> list, int i, int size2) {
-			// TODO Auto-generated constructor stub
-		}
-
-		public Entry(Collection<V> values) {
-			List<V> list = new ArrayList<>(source.getValues());
-			Collections.sort(list, comparator);
-			int index = list.size() / 2;
-			left = new Entry(list, 0, index);
-			right = new Entry(list, index + 1, list.size());
+		public Entry next() {
+			Entry e = right;
+			if (e != null) {
+				while (e.left != null) {
+					e = e.left;
+				}
+				return e;
+			}
+			for (e = this; e != null && !e.isLeft(); e = e.parent);
+			return e == null ? null : e.parent;
+			
 		}
 		
+		public boolean isLeft() {
+			return parent != null && parent.left == this;
+		}
+
 		public int getIndex() {
 			if (parent == null) {
 				return leftSize();
@@ -163,8 +215,8 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 			return parent.getIndex() - size + leftSize();
 		}
 
-		public V get(int index) {
-			if (index == leftSize()) return value;
+		public Entry get(int index) {
+			if (index == leftSize()) return this;
 			if (index < leftSize()) return left.get(index);
 			return right.get(index - leftSize() - 1);
 		}
@@ -197,27 +249,31 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 					e.size--;
 					e = e.right;
 				}
-				setRight(e.parent, e.left);
-				setRight(e, right);
+				e.parent.setRight(e.left);
+				e.setRight(right);
 			}
 			if (parent.left == this) {
-				setLeft(parent, e);
+				parent.setLeft(e);
 			}
 			else {
 				assert parent.right == this;
-				setRight(parent, e);
+				parent.setRight(e);
 			}
 
 		}
 		
-		void setRight(Entry parent, Entry right) {
-			parent.right = right;
-			right.parent = parent;
+		void setRight(Entry right) {
+			this.right = right;
+			if (right != null) {
+				right.parent = this;
+			}
 		}
 		
-		void setLeft(Entry parent, Entry left) {
-			parent.left = left;
-			left.parent = parent;
+		void setLeft(Entry left) {
+			this.left = left;
+			if (left != null) {
+				left.parent = this;
+			}
 		}
 
 		@SuppressWarnings("unchecked")
@@ -246,6 +302,29 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 				}
 			}
 		}
+		
+		@Override
+		public String toString() {
+			return "<" + value + ">";
+		}
+		
+		private void dump() {
+			System.out.print(value);
+			if (left == null && right == null) {
+				return;
+			}
+			System.out.print("(");
+			if (left != null) {
+				left.dump();
+			}
+			System.out.print(",");
+			if (right != null) {
+				right.dump();
+			}
+			System.out.print(")");
+		}
+		
+
 
 	}
 }

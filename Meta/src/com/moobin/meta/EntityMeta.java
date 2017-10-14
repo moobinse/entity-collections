@@ -1,6 +1,6 @@
 package com.moobin.meta;
 
-public interface EntityMeta<V, K> extends ValueMeta<V> {
+public interface EntityMeta<V, K> extends Meta<V> {
 
 	Class<K> getKeyType();
 	

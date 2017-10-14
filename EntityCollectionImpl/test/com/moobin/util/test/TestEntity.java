@@ -1,12 +1,15 @@
 package com.moobin.util.test;
 
-public class Entity {
+import com.moobin.ann.Id;
 
+public class TestEntity {
+
+	@Id
 	public String id;
 	
 	public int number;
 
-	public Entity(int i) {
+	public TestEntity(int i) {
 		this.id = "E" + i;
 		this.number = i;
 	}

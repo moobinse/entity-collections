@@ -2,7 +2,7 @@ package com.moobin.meta;
 
 import java.util.Map;
 
-public interface ValueMeta<V> {
+public interface Meta<V> {
 
 	Class<V> getType();
 

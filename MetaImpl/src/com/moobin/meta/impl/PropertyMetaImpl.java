@@ -6,16 +6,16 @@ import java.util.Set;
 
 import com.moobin.ann.ReadOnly;
 import com.moobin.ann.Required;
-import com.moobin.meta.Composition;
+import com.moobin.meta.PropertyComposition;
 import com.moobin.meta.PropertyMeta;
-import com.moobin.meta.ValueMeta;
+import com.moobin.meta.Meta;
 import com.sun.javafx.collections.MappingChange.Map;
 
 public class PropertyMetaImpl<V, P> implements PropertyMeta<V, P> {
 
-	private ValueMeta<V> owner;
+	private Meta<V> owner;
 	private String name;
-	private Composition composition;
+	private PropertyComposition composition;
 	private boolean required;
 	private boolean readOnly;
 	
@@ -26,24 +26,24 @@ public class PropertyMetaImpl<V, P> implements PropertyMeta<V, P> {
 		composition = getComposition(field.getType());
 	}
 	
-	private static Composition getComposition(Class<?> clazz) {
+	private static PropertyComposition getComposition(Class<?> clazz) {
 		if (clazz.isArray()) {
-			return Composition.list;
+			return PropertyComposition.list;
 		}
 		if (List.class.isAssignableFrom(clazz)) {
-			return Composition.list;
+			return PropertyComposition.list;
 		}
 		if (Set.class.isAssignableFrom(clazz)) {
-			return Composition.list;
+			return PropertyComposition.list;
 		}
 		if (Map.class.isAssignableFrom(clazz)) {
-			return Composition.map;
+			return PropertyComposition.map;
 		}
-		return Composition.singleValue;
+		return PropertyComposition.singleValue;
 	}
 
 	@Override
-	public ValueMeta<V> getOwner() {
+	public Meta<V> getOwner() {
 		return owner;
 	}
 
@@ -53,12 +53,12 @@ public class PropertyMetaImpl<V, P> implements PropertyMeta<V, P> {
 	}
 
 	@Override
-	public ValueMeta<P> getMeta() {
+	public Meta<P> getMeta() {
 		return null;
 	}
 
 	@Override
-	public Composition getComposition() {
+	public PropertyComposition getComposition() {
 		return composition;
 	}
 

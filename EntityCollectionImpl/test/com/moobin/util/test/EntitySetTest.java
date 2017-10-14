@@ -14,15 +14,15 @@ import com.moobin.util.impl.EntitySetBuilderImpl;
 public class EntitySetTest {
 
 	private static EntitySetBuilder factory;
-	private static ModifyibleEntitySet<String, Entity> entities;
-	private static EntitySet<String, Entity> subCollection;
+	private static ModifyibleEntitySet<String, TestEntity> entities;
+	private static EntitySet<String, TestEntity> subCollection;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		
 		factory = new EntitySetBuilderImpl();
-		entities = (ModifyibleEntitySet<String, Entity>) 
-				factory.create(Entity.class, String.class, e -> e.id);
+		entities = (ModifyibleEntitySet<String, TestEntity>) 
+				factory.create(TestEntity.class, String.class, e -> e.id);
 		subCollection = entities.filter(e -> e.number % 10 == 3);
 	}
 
@@ -30,13 +30,13 @@ public class EntitySetTest {
 	public void testFactory() {
 		
 		for (int i = 0; i < 100; i++) {
-			entities.update(new Entity(i));
+			entities.update(new TestEntity(i));
 		}
 		assertEquals(100, entities.getSize());
 		assertEquals(10, subCollection.getSize());
 
 		for (int i = 50; i < 200; i++) {
-			entities.update(new Entity(i));
+			entities.update(new TestEntity(i));
 		}
 		assertEquals(200, entities.getSize());
 		assertEquals(20, subCollection.getSize());
@@ -49,13 +49,13 @@ public class EntitySetTest {
 		assertEquals(0, subCollection.getSize());
 		
 		for (int i = 0; i < 100; i++) {
-			entities.update(new Entity(i));
+			entities.update(new TestEntity(i));
 		}
 		assertEquals(100, entities.getSize());
 		assertEquals(10, subCollection.getSize());
 		
 		for (int i = 50; i < 200; i++) {
-			entities.update(new Entity(i));
+			entities.update(new TestEntity(i));
 		}
 		assertEquals(200, entities.getSize());
 		assertEquals(20, subCollection.getSize());

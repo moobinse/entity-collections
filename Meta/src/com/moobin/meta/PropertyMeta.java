@@ -2,13 +2,13 @@ package com.moobin.meta;
 
 public interface PropertyMeta<V, P> {
 
-	ValueMeta<V> getOwner();
+	Meta<V> getOwner();
 	
 	String getName();
 	
-	ValueMeta<P> getMeta();
+	Meta<P> getMeta();
 
-	Composition getComposition();
+	PropertyComposition getComposition();
 	
 	boolean isRequired();
 

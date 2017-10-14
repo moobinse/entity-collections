@@ -1,6 +1,7 @@
 package com.moobin.util;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -15,6 +16,10 @@ public interface EntitySet<K, V> {
 	Collection<V> getValues();
 
 	EntitySet<K, V> filter(Predicate<V> filter);
+	
+	IndexedEntitySet<K, V> sort(Comparator<V> comparator);
+	
+	V getValue(K key);
 
 	void addListener(EntitySetListener<V> sourceListener);
 	
@@ -29,8 +34,6 @@ public interface EntitySet<K, V> {
 	default Function<V, K> getKeyFunction() {
 		return getEntityMety()::getKey;
 	}
-	
-	V getValue(K key);
 	
 	default K getKey(V value) {
 		return getEntityMety().getKey(value);

@@ -1,6 +1,6 @@
 package com.moobin.meta;
 
-public enum Composition {
+public enum PropertyComposition {
 	
 	singleValue,
 	list,

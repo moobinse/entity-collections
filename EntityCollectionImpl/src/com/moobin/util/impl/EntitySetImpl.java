@@ -2,6 +2,7 @@ package com.moobin.util.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.function.Predicate;
 import com.moobin.meta.EntityMeta;
 import com.moobin.util.EntitySet;
 import com.moobin.util.EntitySetListener;
+import com.moobin.util.IndexedEntitySet;
 import com.moobin.util.ModifyibleEntitySet;
 
 public class EntitySetImpl<K, V> implements ModifyibleEntitySet<K, V> {
@@ -97,6 +99,11 @@ public class EntitySetImpl<K, V> implements ModifyibleEntitySet<K, V> {
 	@Override
 	public void addListener(EntitySetListener<V> listener) {
 		listeners.add(listener);
+	}
+	
+	@Override
+	public IndexedEntitySet<K, V> sort(Comparator<V> comparator) {
+		return new IndexedEntitySetImpl<>(this, comparator);
 	}
 	
 }
