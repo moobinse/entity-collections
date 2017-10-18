@@ -1,10 +1,12 @@
 package com.moobin.util.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import org.junit.Assert;
@@ -14,14 +16,14 @@ import com.moobin.util.EntitySet;
 import com.moobin.util.EntitySetBuilder;
 import com.moobin.util.ModifyibleEntitySet;
 import com.moobin.util.impl.EntitySetBuilderImpl;
-import com.moobin.util.impl.IndexedEntitySetImpl;
+import com.moobin.util.impl.SortedEntitySetImpl;
 
 public class IndexedEntitySetTest {
 
 	private static EntitySetBuilder factory;
 	private static ModifyibleEntitySet<String, TestEntity> entities;
 	private static EntitySet<String, TestEntity> subCollection;
-	private static IndexedEntitySetImpl<String, TestEntity> sorted;	
+	private static SortedEntitySetImpl<String, TestEntity> sorted;	
 	
 	@Test
 	public void testIndexedSet() {
@@ -31,11 +33,29 @@ public class IndexedEntitySetTest {
 		List<Integer> list = new ArrayList<>();
 		randomInts(1000).forEach(list::add);
 		list.forEach(i -> entities.update(new TestEntity(i)));
-		sorted = new IndexedEntitySetImpl<>(entities, (a, b) -> a.number - b.number);
+		sorted = new SortedEntitySetImpl<>(entities, (a, b) -> a.number - b.number);
 		System.out.println(list.size());
+		entities.removeByKey("E302");
 		System.out.println(entities.getSize());
 		System.out.println(sorted.getSize());
 		System.out.println(sorted.get(300, 10));
+		System.out.println(sorted.get(200));
+
+		assertEquals(IndexOutOfBoundsException.class, assertException(() -> sorted.get(-1, 10)));
+		assertEquals(IndexOutOfBoundsException.class, assertException(() -> sorted.get(998, 2)));
+		assertEquals(IndexOutOfBoundsException.class, assertException(() -> sorted.get(999)));
+		
+	
+	}
+	
+	private Class<?> assertException(Supplier<?> supplier) {
+		try {
+			supplier.get();
+		}
+		catch (Exception e) {
+			return e.getClass();
+		}
+		return null;
 	}
 
 	@Test
@@ -46,7 +66,7 @@ public class IndexedEntitySetTest {
 		subCollection = entities.filter(e -> e.number % 10 == 3);
 
 		randomInts(100).forEach(i -> entities.update(new TestEntity(i)));
-		sorted = new IndexedEntitySetImpl<>(entities, (a, b) -> a.number - b.number);
+		sorted = new SortedEntitySetImpl<>(entities, (a, b) -> a.number - b.number);
 		System.out.println(sorted.get(0));
 		System.out.println(sorted.get(1));
 		System.out.println(sorted.get(2));
@@ -104,7 +124,6 @@ public class IndexedEntitySetTest {
 			Assert.assertEquals(i, sorted.indexByKey(key));
 		}
 		
-		sorted.dump();
 	}
 
 	private List<Integer> randomInts(int size) {

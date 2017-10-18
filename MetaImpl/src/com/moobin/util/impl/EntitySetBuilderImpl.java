@@ -10,7 +10,7 @@ import com.moobin.util.EntitySetBuilder;
 public class EntitySetBuilderImpl implements EntitySetBuilder {
 
 	@Override
-	public <K, V> EntitySet<K, V> create(Class<V> valueType, Class<K> keyType, Function<V, K> keyFunction) {
+	public <K extends Comparable<K>, V> EntitySet<K, V> create(Class<V> valueType, Class<K> keyType, Function<V, K> keyFunction) {
 
 		EntityMeta<V, K> entityDef = new EntityMetaImpl<V, K>(valueType, keyType, keyFunction);
 		return new EntitySetImpl<>(entityDef);

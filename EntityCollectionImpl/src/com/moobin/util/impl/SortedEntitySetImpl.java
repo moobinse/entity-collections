@@ -7,64 +7,118 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
+import java.util.function.Function;
 
-import com.moobin.meta.EntityMeta;
 import com.moobin.util.EntitySet;
-import com.moobin.util.EntitySetListener;
-import com.moobin.util.IndexedEntitySet;
+import com.moobin.util.EntitySet.Listener;
+import com.moobin.util.SortedEntitySet;
 
-public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, EntitySetListener<V> {
+public class SortedEntitySetImpl<K extends Comparable<K>, V> implements SortedEntitySet<K, V>, Listener<V> {
 
 	private final EntitySet<K, V> source;
 	private Map<K, Entry> map = new HashMap<>();
 	private Entry root;
 	private Comparator<V> comparator;
+	
+	private Object mutex = new Object();
 
-	public IndexedEntitySetImpl(EntitySet<K, V> source, Comparator<V> comparator) {
+	public SortedEntitySetImpl(EntitySet<K, V> source, Comparator<V> comparator) {
 		this.source = source;
 		this.comparator = comparator;
+		synchronized (mutex) {
+			source.addListener(this);
+			if (!source.getValues().isEmpty()) {
+				root = parse(source.getValues());
+			}
+		}
+	}
+	
+	public <T> SortedEntitySetImpl(EntitySet<K, V> source, Function<V, T> method, Comparator<T> comparator) {
+		this(source, (o1, o2) ->  comparator.compare(method.apply(o1), method.apply(o2)));
+	}
+	
+	public SortedEntitySetImpl(EntitySet<K, V> source) {
+		this.source = source;
+		this.comparator = (a, b) -> getKey(a).compareTo(getKey(b));
 		source.addListener(this);
 		if (!source.getValues().isEmpty()) {
 			root = parse(source.getValues());
 		}
 	}
-
+	
 	@Override
-	public EntityMeta<V, K> getEntityMety() {
-		return source.getEntityMety();
+	public void onAdd(V value) {
+		synchronized (mutex) {
+			if (root == null) {
+				root = new Entry(value);
+				map.put(root.key, root);
+			} else {
+				root.add(value);
+			}
+		}
+		// TODO notify
 	}
 
 	@Override
-	public V getValue(K key) {
-		return source.getValue(key);
+	public void onUpdate(V value, V oldValue) {
+		synchronized (mutex) {
+			assert source.getKey(value).equals(source.getKey(oldValue));
+			Entry entry = map.get(source.getKey(value));
+			assert oldValue == entry.value;
+			if (comparator.compare(value, entry.value) == 0) {
+				entry.value = value;
+				// TODO notify
+			} else {
+				// TODO: handle as one event
+				onRemove(oldValue);
+				onAdd(value);
+			}
+		}
 	}
 
 	@Override
-	public int getSize() {
-		return source.getSize();
+	public void onRemove(V value) {
+		synchronized (mutex) {
+			map.get(source.getKey(value)).remove();
+		}
 	}
 
 	@Override
-	public Collection<V> getValues() {
-		return source.getValues();
+	public void onClear() {
+		synchronized (mutex) {
+			root = null;
+			map.clear();
+		}
 	}
-
+	
 	@Override
-	public EntitySet<K, V> filter(Predicate<V> filter) {
-		return source.filter(filter);
+	public void onDestroy() {
+		throw new RuntimeException("Not implemented");
+	}
+	
+	@Override
+	public EntitySet<K, V> getSource() {
+		return source;
 	}
 
 	@Override
 	public V get(int index) {
-		return root.get(index).value;
+		synchronized (mutex) {
+			if (index < 0 || index >= getSize()) {
+				throw new IndexOutOfBoundsException();
+			}
+			return root.get(index).value;
+		}
 	}
 	
 	public List<V> get(int from, int count) {
 		List<V> list = new ArrayList<>();
-		Entry entry = root.get(from);
-		for (int i = 0; i < count; i++) {
-			if (entry != null) {
+		synchronized (mutex) {
+			if (from < 0 || from + count > getSize()) {
+				throw new IndexOutOfBoundsException();
+			}
+			Entry entry = root.get(from);
+			for (int i = 0; entry != null && i < count; i++) {
 				list.add(entry.value);
 				entry = entry.next();
 			}
@@ -77,82 +131,10 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 		Entry entry = map.get(key);
 		return entry == null ? -1 : entry.getIndex();
 	}
-
-	@Override
-	public void addListener(EntitySetListener<V> listener) {
-		source.addListener(listener);
-	}
-
-	@Override
-	public void onAdd(V value) {
-		if (root == null) {
-			root = new Entry(value);
-			map.put(root.key, root);
-		} else {
-			root.add(value);
-		}
-		// TODO notify
-	}
-
-	@Override
-	public void onUpdate(V value, V oldValue) {
-		assert getKey(value).equals(getKey(oldValue));
-		Entry entry = map.get(getKey(value));
-		assert oldValue == entry.value;
-		if (comparator.compare(value, entry.value) == 0) {
-			entry.value = value;
-			// TODO notify
-		} else {
-			// TODO: handle as one event
-			onRemove(oldValue);
-			onAdd(value);
-		}
-	}
-
-	@Override
-	public void onRemove(V value) {
-		map.get(getKey(value)).remove();
-	}
-
-	@Override
-	public void onClear() {
-		root = null;
-		map.clear();
-	}
-	
-	@Override
-	public IndexedEntitySet<K, V> sort(Comparator<V> comparator) {
-		return source.sort(comparator);
-	}
-
-	public void dump() {
-		if (root != null) {
-			dump(root);
-		}
-		System.out.println();
-	}
-	
-	private void dump(Entry e) {
-		if (e == null) {
-			System.out.print("-");
-			return;
-		}
-		System.out.print(e.value);
-		if (e.left == null && e.right == null) {
-			return;
-		}
-		if (e.size == 1) return;
-		System.out.print("(");
-		dump(e.left);
-		System.out.print(",");
-		dump(e.right);
-		System.out.print(")");
-	}
 	
 	private Entry parse(List<V> list, int from, int to) {
 
 		int mid = (to + from) / 2;
-//		System.out.println(from + "-" + to + "  (" + mid + ")");
 		Entry entry = new Entry(list.get(mid));
 		entry.size = to - from + 1;
 		if (mid > from) {
@@ -185,7 +167,7 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 
 		Entry(V value) {
 			this.value = value;
-			this.key = getKey(value);
+			this.key = source.getKey(value);
 		}
 
 		public Entry next() {
@@ -281,7 +263,7 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 			size++;
 			int cmp = comparator.compare(this.value, value);
 			if (cmp == 0) {
-				cmp = ((Comparable<K>) key).compareTo(getKey(value));
+				cmp = ((Comparable<K>) key).compareTo(source.getKey(value));
 			}
 			assert cmp != 0;
 			if (cmp > 0) {
@@ -306,25 +288,9 @@ public class IndexedEntitySetImpl<K, V> implements IndexedEntitySet<K, V>, Entit
 		@Override
 		public String toString() {
 			return "<" + value + ">";
-		}
-		
-		private void dump() {
-			System.out.print(value);
-			if (left == null && right == null) {
-				return;
-			}
-			System.out.print("(");
-			if (left != null) {
-				left.dump();
-			}
-			System.out.print(",");
-			if (right != null) {
-				right.dump();
-			}
-			System.out.print(")");
-		}
-		
+		}		
 
 
 	}
+
 }

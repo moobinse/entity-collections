@@ -10,23 +10,23 @@ import java.util.function.Predicate;
 
 import com.moobin.meta.EntityMeta;
 import com.moobin.util.EntitySet;
-import com.moobin.util.EntitySetListener;
-import com.moobin.util.IndexedEntitySet;
 import com.moobin.util.ModifyibleEntitySet;
+import com.moobin.util.SortedEntitySet;
 
-public class EntitySetImpl<K, V> implements ModifyibleEntitySet<K, V> {
+public class EntitySetImpl<K extends Comparable<K>, V> implements ModifyibleEntitySet<K, V> {
 
-	private Map<K, V> map;
-	private EntityMeta<V, K> entityDef;
+	protected final Map<K, V> map = new HashMap<>();
+	private final EntityMeta<V, K> entityDef;
 	
-	private Map<Predicate<V>, ModifyibleEntitySet<K, V>> subSets = new HashMap<>();
-	private List<EntitySetListener<V>> listeners = new ArrayList<>();
+	private final Map<Predicate<V>, EntitySubSet<K, V>> subSets = new HashMap<>();
+	private final List<Listener<V>> listeners = new ArrayList<>();
+	
+	private final Object mutex = new Object();
 	
 	public EntitySetImpl(EntityMeta<V, K> entityDef) {
-		map = new HashMap<>();
 		this.entityDef = entityDef;
 	}
-	
+		
 	@Override
 	public EntityMeta<V, K> getEntityMety() {
 		return entityDef;
@@ -34,19 +34,11 @@ public class EntitySetImpl<K, V> implements ModifyibleEntitySet<K, V> {
 
 	@Override
 	public EntitySet<K, V> filter(Predicate<V> filter) {
-		ModifyibleEntitySet<K, V> subSet = subSets.get(filter);
+		EntitySubSet<K, V> subSet = subSets.get(filter);
 		if (subSet == null) {
-			subSet = new EntitySetImpl<K, V>(entityDef) {
-				@Override
-				public V update(V value) {
-					if (!filter.test(value)) {
-						return removeByKey(getKey(value));
-					}
-					return super.update(value);
-				}
-			};
-			getValues().forEach(subSet::update);
-			subSets.put(filter, subSet);
+			synchronized (mutex) {
+				subSets.put(filter, subSet = new EntitySubSet<>(this, filter));
+			}
 		}
 		return subSet;
 	}
@@ -58,32 +50,47 @@ public class EntitySetImpl<K, V> implements ModifyibleEntitySet<K, V> {
 
 	@Override
 	public V update(V value) {
-		V oldValue = map.put(getKey(value), value);
-		subSets.forEach((p,s) -> s.update(value));
-		if (oldValue == null) {
-			listeners.forEach(l -> l.onAdd(value));
+		synchronized (mutex) {
+			V oldValue = map.put(getKey(value), value);
+			subSets.forEach((p,s) -> s.update(value));
+			if (oldValue == null) {
+				listeners.forEach(l -> l.onAdd(value));
+			}
+			else {
+				listeners.forEach(l -> l.onUpdate(value, oldValue));
+			}
+			return oldValue;
 		}
-		else {
-			listeners.forEach(l -> l.onUpdate(value, oldValue));
-		}
-		return oldValue;
 	}
 	
 	@Override
 	public V removeByKey(K key) {
-		V oldValue = map.remove(key);
-		if (oldValue != null) {
-			subSets.forEach((p,s) -> s.removeByKey(key));
-			listeners.forEach(l -> l.onRemove(oldValue));
+		synchronized (mutex) {
+			V oldValue = map.remove(key);
+			if (oldValue != null) {
+				subSets.forEach((p,s) -> s.removeByKey(key));
+				listeners.forEach(l -> l.onRemove(oldValue));
+			}
+			return oldValue;
 		}
-		return oldValue;
 	}
 	
 	@Override
 	public void clear() {
-		map.clear();
-		subSets.values().forEach(ModifyibleEntitySet::clear);
-		listeners.forEach(l -> l.onClear());
+		synchronized (mutex) {
+			map.clear();
+			subSets.values().forEach(ModifyibleEntitySet::clear);
+			listeners.forEach(Listener::onClear);
+		}
+	}
+	
+	@Override
+	public void destroy() {
+		synchronized (mutex) {
+			map.clear();
+			subSets.values().forEach(ModifyibleEntitySet::destroy);
+			listeners.forEach(Listener::onDestroy);
+		}
 	}
 
 	@Override
@@ -97,13 +104,22 @@ public class EntitySetImpl<K, V> implements ModifyibleEntitySet<K, V> {
 	}
 	
 	@Override
-	public void addListener(EntitySetListener<V> listener) {
-		listeners.add(listener);
+	public Collection<V> addListener(Listener<V> listener) {
+		synchronized (mutex) {
+			Collection<V> values = new ArrayList<>(getValues());
+			listeners.add(listener);
+			return values;
+		}
 	}
 	
 	@Override
-	public IndexedEntitySet<K, V> sort(Comparator<V> comparator) {
-		return new IndexedEntitySetImpl<>(this, comparator);
+	public void removeListener(Listener<V> listener) {
+		listeners.remove(listener);
+	}
+	
+	@Override
+	public SortedEntitySet<K, V> sort(Comparator<V> comparator) {
+		return new SortedEntitySetImpl<>(this, comparator);
 	}
 	
 }

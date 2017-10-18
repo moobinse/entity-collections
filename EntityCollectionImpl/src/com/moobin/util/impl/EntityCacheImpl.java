@@ -11,13 +11,13 @@ public class EntityCacheImpl implements EntitySets {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <K, V> EntitySet<K, V> getSet(Class<V> clazz) {
+	public <K extends Comparable<K>, V> EntitySet<K, V> getSet(Class<V> clazz) {
 		return (EntitySet<K, V>) map.get(clazz);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <K, V> EntitySet<K, V> getSet(String name) {
+	public <K extends Comparable<K>, V> EntitySet<K, V> getSet(String name) {
 		return (EntitySet<K, V>) map.get(name);
 	}
 
