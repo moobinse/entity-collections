@@ -1,0 +1,76 @@
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.moobin.entity</groupId>
+  <artifactId>entitysets</artifactId>
+  <packaging>jar</packaging>
+  <version>0.1.0</version>
+  <name>entitysets</name>
+  <url>http://github.com/moobinse/entitysets</url>
+
+  <issueManagement>
+    <url>https://github.com/moobinse/entitysets/issues</url>
+    <system>GitHub Issues</system>
+  </issueManagement>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://github.com/moobinse/entitysets/license.txt</url>
+      <distribution>repo</distribution>
+          <!--
+              repo - may be downloaded from the Maven repository
+              manual - user must manually download and install the dependency.
+          -->
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/moobinse/entitysets</url>
+    <connection>scm:git:git://github.com/moobinse/entitysets.git</connection>
+    <developerConnection>scm:git:git@github.com:moobinse/entitysets.git</developerConnection>
+  </scm>
+
+  <developers>
+    <developer>
+      <email>moobin@moobin.org</email>
+      <name>Magnus Lenti</name>
+      <url>https://github.com/moobinse</url>
+      <id>moobinse</id>
+    </developer>
+  </developers>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
