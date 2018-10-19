@@ -21,43 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.moobin.meta;
+package org.moobin.entityset.impl;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import org.moobin.entityset.Tree;
+import org.moobin.entityset.TreeNode;
 
 /**
- * 
  * @author Magnus Lenti
  *
  */
-public interface Rules {
+public class TreeImpl implements Tree {
 
-	/**
-	 * 
-	 * Test for inclusion of  type
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	boolean include(Class<?> clazz);
-
-	/**
-	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
-	 */
-	String include(Field field);
-
-	/**
-	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
-	 */
-	String include(Method method);
 	
+	private TreeNodeImpl root;
+
+	@Override
+	public TreeNodeImpl getRoot() {
+		return root;
+	}
+
+	@Override
+	public void setRoot(TreeNode root) {
+		this.root = (TreeNodeImpl) root;
+	}
+
 }

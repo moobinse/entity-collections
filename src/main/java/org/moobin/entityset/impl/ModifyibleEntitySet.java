@@ -21,43 +21,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.moobin.meta;
+package org.moobin.entityset.impl;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import org.moobin.entityset.EntitySet;
 
 /**
  * 
  * @author Magnus Lenti
  *
+ * @param <K>
+ * @param <V>
  */
-public interface Rules {
+public interface ModifyibleEntitySet<K extends Comparable<K>, V> extends EntitySet<K, V> {
 
 	/**
 	 * 
-	 * Test for inclusion of  type
-	 * 
-	 * @param clazz
+	 * @param value
 	 * @return
 	 */
-	boolean include(Class<?> clazz);
-
-	/**
-	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
-	 */
-	String include(Field field);
-
-	/**
-	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
-	 */
-	String include(Method method);
+	V update(V value);
 	
+	/**
+	 * 
+	 * @param key
+	 * @return
+	 */
+	V removeByKey(K key);
+	
+	/**
+	 * 
+	 * @param value
+	 * @return
+	 */
+	default V remove(V value) {
+		return removeByKey(getKey(value));
+	}
+	
+	/**
+	 * 
+	 */
+	void clear();
+
+	/**
+	 * 
+	 */
+	void destroy();
+
 }

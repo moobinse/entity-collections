@@ -23,41 +23,43 @@
  */
 package org.moobin.meta;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * 
+ * Description of this value type
+ * 
  * @author Magnus Lenti
  *
+ * @param <V>
  */
-public interface Rules {
+public interface ValueDescription<V> {
 
 	/**
 	 * 
-	 * Test for inclusion of  type
+	 * Get java class representing this description
 	 * 
-	 * @param clazz
 	 * @return
 	 */
-	boolean include(Class<?> clazz);
+	Class<V> getType();
 
 	/**
+	 * Get property descriptions
 	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
+	 * @return
 	 */
-	String include(Field field);
-
+	Map<String, PropertyDescription<V, ?>> getProperties();
+	
 	/**
 	 * 
-	 * Test for inclusion of java method
+	 * Get property description by name
 	 * 
-	 * @param method
-	 * @return name of property
+	 * @param name
+	 * @return
 	 */
-	String include(Method method);
+	@SuppressWarnings("unchecked")
+	default <T> PropertyDescription<V, T> getProperty(String name) {
+		return (PropertyDescription<V, T>) getProperties().get(name);
+	}
 	
 }

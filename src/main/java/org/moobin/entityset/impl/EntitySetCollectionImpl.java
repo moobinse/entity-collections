@@ -21,43 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.moobin.meta;
+package org.moobin.entityset.impl;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.Map;
 
-/**
- * 
- * @author Magnus Lenti
- *
- */
-public interface Rules {
+import org.moobin.entityset.EntitySet;
+import org.moobin.entityset.EntitySetCollection;
 
-	/**
-	 * 
-	 * Test for inclusion of  type
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	boolean include(Class<?> clazz);
+public class EntitySetCollectionImpl implements EntitySetCollection {
 
-	/**
-	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
-	 */
-	String include(Field field);
-
-	/**
-	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
-	 */
-	String include(Method method);
+	Map<Object, EntitySet<?, ?>> map;
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <K extends Comparable<K>, V> EntitySet<K, V> getSet(Class<V> clazz) {
+		return (EntitySet<K, V>) map.get(clazz);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <K extends Comparable<K>, V> EntitySet<K, V> getSet(String name) {
+		return (EntitySet<K, V>) map.get(name);
+	}
+
 }

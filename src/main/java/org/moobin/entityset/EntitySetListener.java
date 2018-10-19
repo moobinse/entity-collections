@@ -21,43 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.moobin.meta;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+package org.moobin.entityset;
 
 /**
  * 
+ * Listener for changes in this set
+ * 
  * @author Magnus Lenti
  *
+ * @param <V> value type
  */
-public interface Rules {
+public interface EntitySetListener<V> {
 
 	/**
+	 * Notification when value is added to set
 	 * 
-	 * Test for inclusion of  type
-	 * 
-	 * @param clazz
-	 * @return
+	 * @param value
 	 */
-	boolean include(Class<?> clazz);
+	void onAdd(V value);
 
 	/**
+	 * Notification when value is updated
 	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
+	 * @param value
+	 * @param oldValue
 	 */
-	String include(Field field);
+	void onUpdate(V value, V oldValue);
 
 	/**
+	 * Notification when value is removed from set
 	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
+	 * @param value
 	 */
-	String include(Method method);
+	void onRemove(V value);
+	
+	/**
+	 * Notification when set is cleared
+	 */
+	void onClear();
+
+	/**
+	 * Notification when value is destroyed
+	 */
+	void onDestroy();
 	
 }

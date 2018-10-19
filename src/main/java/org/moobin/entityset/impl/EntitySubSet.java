@@ -21,43 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.moobin.meta;
+package org.moobin.entityset.impl;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.function.Predicate;
 
 /**
  * 
  * @author Magnus Lenti
  *
+ * @param <K>
+ * @param <V>
  */
-public interface Rules {
+class EntitySubSet<K extends Comparable<K>, V> extends EntitySetImpl<K, V> {
+
+	private final Predicate<V> filter;
 
 	/**
 	 * 
-	 * Test for inclusion of  type
-	 * 
-	 * @param clazz
-	 * @return
+	 * @param source
+	 * @param filter
 	 */
-	boolean include(Class<?> clazz);
-
-	/**
-	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
-	 */
-	String include(Field field);
-
-	/**
-	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
-	 */
-	String include(Method method);
+	public EntitySubSet(EntitySetImpl<K, V> source, Predicate<V> filter) {
+		super(source.getEntityMeta());
+		this.filter = filter;
+		source.map.forEach((k, v) -> { if (filter.test(v)) map.put(k, v); });
+	}
+	
+    /**
+     * {@inheritDoc} 
+     */
+	@Override
+	public V update(V value) {
+		if (!filter.test(value)) {
+			return removeByKey(getKey(value));
+		}
+		return super.update(value);
+	}
 	
 }

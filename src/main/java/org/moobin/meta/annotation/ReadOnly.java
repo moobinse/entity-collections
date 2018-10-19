@@ -21,43 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.moobin.meta;
+package org.moobin.meta.annotation;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+@Documented
+@Retention(RUNTIME)
+@Target(FIELD)
 /**
- * 
  * @author Magnus Lenti
  *
  */
-public interface Rules {
+public @interface ReadOnly {
 
-	/**
-	 * 
-	 * Test for inclusion of  type
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	boolean include(Class<?> clazz);
-
-	/**
-	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
-	 */
-	String include(Field field);
-
-	/**
-	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
-	 */
-	String include(Method method);
-	
 }

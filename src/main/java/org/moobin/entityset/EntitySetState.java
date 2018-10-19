@@ -21,43 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.moobin.meta;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+package org.moobin.entityset;
 
 /**
- * 
  * @author Magnus Lenti
  *
  */
-public interface Rules {
-
-	/**
-	 * 
-	 * Test for inclusion of  type
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	boolean include(Class<?> clazz);
-
-	/**
-	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
-	 */
-	String include(Field field);
-
-	/**
-	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
-	 */
-	String include(Method method);
+public enum EntitySetState {
 	
+	LIVE, LOCKED, DEAD, INIT
+
 }

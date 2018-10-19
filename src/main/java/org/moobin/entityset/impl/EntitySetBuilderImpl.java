@@ -21,43 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.moobin.meta;
+package org.moobin.entityset.impl;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.function.Function;
 
-/**
- * 
- * @author Magnus Lenti
- *
- */
-public interface Rules {
+import org.moobin.entityset.EntitySet;
+import org.moobin.entityset.EntitySetBuilder;
+import org.moobin.entityset.impl.EntitySetImpl;
+import org.moobin.meta.EntityDescription;
+import org.moobin.meta.impl.EntityMetaImpl;
 
-	/**
-	 * 
-	 * Test for inclusion of  type
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	boolean include(Class<?> clazz);
+public class EntitySetBuilderImpl implements EntitySetBuilder {
 
-	/**
-	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
-	 */
-	String include(Field field);
+	@Override
+	public <K extends Comparable<K>, V> EntitySet<K, V> create(Class<V> valueType, Class<K> keyType, Function<V, K> keyFunction) {
 
-	/**
-	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
-	 */
-	String include(Method method);
-	
+		EntityDescription<V, K> entityDef = new EntityMetaImpl<V, K>(valueType, keyType, keyFunction);
+		return new EntitySetImpl<>(entityDef);
+	}
+
 }

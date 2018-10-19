@@ -21,43 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.moobin.meta;
+package org.moobin.entityset;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.function.Function;
 
 /**
  * 
  * @author Magnus Lenti
  *
  */
-public interface Rules {
+public interface EntitySetBuilder {
 
 	/**
 	 * 
-	 * Test for inclusion of  type
-	 * 
-	 * @param clazz
+	 * @param valueType
+	 * @param keyType
+	 * @param keyFunction
 	 * @return
 	 */
-	boolean include(Class<?> clazz);
-
-	/**
-	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
-	 */
-	String include(Field field);
-
-	/**
-	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
-	 */
-	String include(Method method);
+	<K extends Comparable<K>, V> EntitySet<K, V> create(Class<V> valueType, Class<K> keyType, Function<V, K> keyFunction);
 	
 }

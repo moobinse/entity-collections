@@ -23,41 +23,18 @@
  */
 package org.moobin.meta;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 /**
  * 
  * @author Magnus Lenti
  *
  */
-public interface Rules {
+public interface Descriptions {
 
 	/**
-	 * 
-	 * Test for inclusion of  type
 	 * 
 	 * @param clazz
 	 * @return
 	 */
-	boolean include(Class<?> clazz);
+	<T> ValueDescription<T> getDescription(Class<T> clazz);
 
-	/**
-	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
-	 */
-	String include(Field field);
-
-	/**
-	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
-	 */
-	String include(Method method);
-	
 }

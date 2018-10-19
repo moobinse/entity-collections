@@ -21,43 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.moobin.meta;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+package org.moobin.entityset;
 
 /**
  * 
  * @author Magnus Lenti
  *
  */
-public interface Rules {
+public interface EntitySetCollection {
 
 	/**
-	 * 
-	 * Test for inclusion of  type
 	 * 
 	 * @param clazz
 	 * @return
 	 */
-	boolean include(Class<?> clazz);
+	<K extends Comparable<K>, V> EntitySet<K, V> getSet(Class<V> clazz);
 
 	/**
 	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
+	 * @param name
+	 * @return
 	 */
-	String include(Field field);
+	<K extends Comparable<K>, V> EntitySet<K, V> getSet(String name);
 
-	/**
-	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
-	 */
-	String include(Method method);
-	
 }

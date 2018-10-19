@@ -23,41 +23,56 @@
  */
 package org.moobin.meta;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 /**
  * 
  * @author Magnus Lenti
  *
+ * @param <V>
+ * @param <P>
  */
-public interface Rules {
+public interface PropertyDescription<V, P> {
 
 	/**
 	 * 
-	 * Test for inclusion of  type
-	 * 
-	 * @param clazz
 	 * @return
 	 */
-	boolean include(Class<?> clazz);
+	ValueDescription<V> getOwner();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	String getName();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	ValueDescription<P> getValueDescription();
 
 	/**
 	 * 
-	 * Test for inclusion of java field
-	 * 
-	 * @param field
-	 * @return name of property
+	 * @return
 	 */
-	String include(Field field);
+	PropertyComposition getComposition();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	boolean isRequired();
 
 	/**
 	 * 
-	 * Test for inclusion of java method
-	 * 
-	 * @param method
-	 * @return name of property
+	 * @return
 	 */
-	String include(Method method);
+	boolean isReadOnly();
+
+	/**
+	 * 
+	 * @param value
+	 * @return
+	 */
+	Object getProperty(V value);
 	
 }
