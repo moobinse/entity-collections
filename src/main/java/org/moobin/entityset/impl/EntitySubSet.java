@@ -42,7 +42,7 @@ class EntitySubSet<K extends Comparable<K>, V> extends EntitySetImpl<K, V> {
 	 * @param filter
 	 */
 	public EntitySubSet(EntitySetImpl<K, V> source, Predicate<V> filter) {
-		super(source.getEntityMeta());
+		super(source);
 		this.filter = filter;
 		source.map.forEach((k, v) -> { if (filter.test(v)) map.put(k, v); });
 	}

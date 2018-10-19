@@ -95,6 +95,22 @@ public class SortedEntitySetImpl2<K extends Comparable<K>, V> implements SortedE
 		state = source.getState();
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Class<K> getKeyType() {
+		return source.getKeyType();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Class<V> getValueType() {
+		return source.getValueType();
+	}
+	
     /**
      * {@inheritDoc} 
      */

@@ -88,8 +88,8 @@ public interface SortedEntitySet<K extends Comparable<K>, V> extends EntitySet<K
      * {@inheritDoc} 
      */
 	@Override
-	default EntityDescription<V, K> getEntityMeta() {
-		return getSource().getEntityMeta();
+	default K getKey(V value) {
+		return getSource().getKey(value);
 	}
 
     /**

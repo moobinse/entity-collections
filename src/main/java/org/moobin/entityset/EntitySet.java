@@ -42,12 +42,6 @@ import org.moobin.meta.EntityDescription;
 public interface EntitySet<K extends Comparable<K>, V> {
 	
 	/**
-	 * Get description of value type
-	 * @return
-	 */
-	EntityDescription<V, K> getEntityMeta();
-
-	/**
 	 * Get the size of this set
 	 * @return
 	 */
@@ -87,35 +81,21 @@ public interface EntitySet<K extends Comparable<K>, V> {
 	 * Get the value type of this set
 	 * @return
 	 */
-	default Class<V> getValueType() {
-		return getEntityMeta().getType();
-	}
-
+	Class<V> getValueType();
+	
 	/**
 	 * Get the key type of the values 
 	 * @return
 	 */
-	default Class<K> getKeyType() {
-		return getEntityMeta().getKeyType();
-	}
+	Class<K> getKeyType();
 	
-	/**
-	 * Get the value to key method
-	 * @return
-	 */
-	default Function<V, K> getKeyFunction() {
-		return getEntityMeta()::getKey;
-	}
-
 	/**
 	 * Get the key of a value
 	 * 
 	 * @param value
 	 * @return
 	 */
-	default K getKey(V value) {
-		return getEntityMeta().getKey(value);
-	}
+	K getKey(V value);
 
 	/**
 	 * Add a listener 

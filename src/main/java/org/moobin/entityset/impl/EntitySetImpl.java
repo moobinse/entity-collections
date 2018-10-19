@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.moobin.entityset.EntitySet;
@@ -47,30 +48,49 @@ import org.moobin.meta.EntityDescription;
 public class EntitySetImpl<K extends Comparable<K>, V> implements ModifyibleEntitySet<K, V> {
 
 	protected final Map<K, V> map = new HashMap<>();
-	private final EntityDescription<V, K> entityDef;
+	//private final EntityDescription<V, K> entityDef;
 	
 	private final Map<Predicate<V>, EntitySubSet<K, V>> subSets = new HashMap<>();
 	private final List<EntitySetListener<V>> listeners = new ArrayList<>();
 	
 	private final Object mutex = new Object();
 	private EntitySetState state = EntitySetState.INIT;
+
+	private final Function<V, K> keyMethod;
+	private final Class<K> keyType;
+	private final Class<V> valueType;
 	
 	/**
 	 * 
 	 * @param entityDef
 	 */
 	public EntitySetImpl(EntityDescription<V, K> entityDef) {
-		this.entityDef = entityDef;
+		keyMethod = entityDef::getKey;
+		keyType = entityDef.getKeyType();
+		valueType = entityDef.getType();
 	}
-		
-    /**
-     * {@inheritDoc} 
-     */
-	@Override
-	public EntityDescription<V, K> getEntityMeta() {
-		return entityDef;
+	
+	public EntitySetImpl(EntitySet<K, V> source) {
+		keyMethod = source::getKey;
+		keyType = source.getKeyType();
+		valueType = source.getValueType();
 	}
 
+	@Override
+	public K getKey(V value) {
+		return keyMethod.apply(value);
+	}
+	
+	@Override
+	public Class<K> getKeyType() {
+		return keyType;
+	}
+	
+	@Override
+	public Class<V> getValueType() {
+		return valueType;
+	}
+		
     /**
      * {@inheritDoc} 
      */
